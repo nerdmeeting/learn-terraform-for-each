@@ -72,8 +72,8 @@ module "elb_http" {
   name     = trimsuffix(substr(replace(join("-", ["lb", random_string.lb_id.result, each.key, each.value.environment]), "/[^a-zA-Z0-9-]/", ""), 0, 32), "-")
   internal = false
 
-  security_groups = [module.lb_security_group.security_group_id]
-  subnets         = module.vpc.public_subnets
+  security_groups = [module.lb_security_group[each.key].security_group_id]
+  subnets         = module.vpc[each.key].public_subnets
 
   number_of_instances = length(module.ec2_instances[each.key].instance_ids)
   instances           = module.ec2_instances[each.key].instance_ids

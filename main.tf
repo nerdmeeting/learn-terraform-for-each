@@ -14,6 +14,8 @@ data "aws_availability_zones" "available" {
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.17.0"
+  
+  for_each = var.project
 
   cidr = var.vpc_cidr_block
 

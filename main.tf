@@ -32,12 +32,14 @@ module "vpc" {
 module "app_security_group" {
   source  = "terraform-aws-modules/security-group/aws//modules/web"
   version = "5.2.0"
+  
+  for_each = var.project
 
-  name        = "web-server-sg-${var.project_name}-${var.environment}"
+  name        = "web-server-sg-${each.key}-${each.value.environment}"
   description = "Security group for web-servers with HTTP ports open within VPC"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = module.vpc[each.key].vpc_id
 
-  ingress_cidr_blocks = module.vpc.public_subnets_cidr_blocks
+  ingress_cidr_blocks = module.vpc[each.key].public_subnets_cidr_blocks
 }
 
 module "lb_security_group" {

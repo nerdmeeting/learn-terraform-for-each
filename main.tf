@@ -64,10 +64,12 @@ resource "random_string" "lb_id" {
 module "elb_http" {
   source  = "terraform-aws-modules/elb/aws"
   version = "4.0.2"
+  
+  for_each = var.project
 
   # Comply with ELB name restrictions
   # https://docs.aws.amazon.com/elasticloadbalancing/2012-06-01/APIReference/API_CreateLoadBalancer.html
-  name     = trimsuffix(substr(replace(join("-", ["lb", random_string.lb_id.result, var.project_name, var.environment]), "/[^a-zA-Z0-9-]/", ""), 0, 32), "-")
+  name     = trimsuffix(substr(replace(join("-", ["lb", random_string.lb_id.result, each.key, each.value.environment]), "/[^a-zA-Z0-9-]/", ""), 0, 32), "-")
   internal = false
 
   security_groups = [module.lb_security_group.security_group_id]

@@ -45,11 +45,13 @@ module "app_security_group" {
 module "lb_security_group" {
   source  = "terraform-aws-modules/security-group/aws//modules/web"
   version = "5.2.0"
+  
+  for_each = var.project
 
-  name = "load-balancer-sg-${var.project_name}-${var.environment}"
+  name = "load-balancer-sg-${each.key}-${each.value.environment}"
 
   description = "Security group for load balancer with HTTP ports open within VPC"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = module.vpc[each.key].vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
 }
